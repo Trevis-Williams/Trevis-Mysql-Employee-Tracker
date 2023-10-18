@@ -1,5 +1,20 @@
 import cfonts from 'cfonts';
 import inquirer from 'inquirer';
+import mysql from 'mysql2';
+
+// Set up the MySQL connection
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'root',
+  database: 'EmpMan'
+});
+
+// Connect to the database
+connection.connect();
+
+
+
 
 
 function displayEmployeeManagerText() {
@@ -23,7 +38,7 @@ function displayEmployeeManagerText() {
 displayEmployeeManagerText();
 
 function viewAllEmployees() {
-  const sql = 'SELECT * FROM employees'; // Replace 'employee' with the actual table name
+  const sql = 'SELECT employee.first_name, employee.last_name, role.title, role.salary, employee.manager_id FROM employee JOIN role'; // Replace 'employee' with the actual table name
 
   // Run the SQL query to fetch all employees
   connection.query(sql, (err, results) => {
@@ -33,12 +48,31 @@ function viewAllEmployees() {
     }
 
     // Display the list of employees in a formatted way (you can use console.table)
-    console.table('All Employees', results);
+    console.table(results);
 
     // Call the function to continue with user prompts
     promptUser();
   });
 }
+
+function viewAllDepartments() {
+  const sql = 'SELECT * FROM department'; // Replace 'employee' with the actual table name
+
+  // Run the SQL query to fetch all employees
+  connection.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error querying database:', err);
+      return;
+    }
+
+    // Display the list of employees in a formatted way (you can use console.table)
+    console.table(results);
+
+    // Call the function to continue with user prompts
+    promptUser();
+  });
+}
+
 
 function addEmployee() {
   inquirer
@@ -105,27 +139,95 @@ function updateEmployeeRole() {
 }
 
 function viewAllRoles() {
-  // Implement logic to view all roles here
-  // You can query the database and display the list of roles
-  // Add your code here
+  const sql = 'SELECT * FROM role'; // Replace 'employee' with the actual table name
+
+  // Run the SQL query to fetch all employees
+  connection.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error querying database:', err);
+      return;
+    }
+
+    // Display the list of employees in a formatted way (you can use console.table)
+    console.table(results);
+
+    // Call the function to continue with user prompts
+    promptUser();
+  });
 }
 
 function addRole() {
-  // Implement logic to add a role here
-  // You can prompt the user for input and then perform an INSERT INTO SQL query
-  // Add your code here
+  inquirer
+    .prompt([
+      {
+        type: 'input',
+        name: 'title',
+        message: "What is the title of this role.",
+      },
+      {
+        type: 'input',
+        name: 'salary',
+        message: "What is the salary for this role",
+      },
+      {
+        type: 'input',
+        name: 'department_id',
+        message: "What is the department id for this role?",
+      },
+    ])
+    .then((answers) => {
+      const sql = 'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)';
+      const values = [
+        answers.title,
+        answers.salary,
+        answers.department_id,
+      ];
+
+      // Run the SQL query to add the employee
+      connection.query(sql, values, (err, results) => {
+        if (err) {
+          console.error('Error adding role to the database:', err);
+          return;
+        }
+
+        console.log('Role added successfully!');
+
+        // Call the function to continue with user prompts
+        promptUser();
+      });
+    });
 }
 
-function viewAllDepartments() {
-  // Implement logic to view all departments here
-  // You can query the database and display the list of departments
-  // Add your code here
-}
+
 
 function addDepartment() {
-  // Implement logic to add a department here
-  // You can prompt the user for input and then perform an INSERT INTO SQL query
-  // Add your code here
+  inquirer
+    .prompt([
+      {
+        type: 'input',
+        name: 'name',
+        message: "What is the department name",
+      },
+    ])
+    .then((answers) => {
+      const sql = 'INSERT INTO department (name) VALUES (?)';
+      const values = [
+        answers.name,
+      ];
+
+      // Run the SQL query to add the employee
+      connection.query(sql, values, (err, results) => {
+        if (err) {
+          console.error('Error adding employee to the database:', err);
+          return;
+        }
+
+        console.log('Department added successfully!');
+
+        // Call the function to continue with user prompts
+        promptUser();
+      });
+    });
 }
 
 
@@ -153,6 +255,18 @@ function promptUser() {
       switch (answers.choice) {
         case 'View All Employees':
           viewAllEmployees();
+          break;
+        case 'Add Role':
+          addRole();
+          break;
+        case 'View All Roles':
+          viewAllRoles();
+          break;
+        case 'Add Department':
+          addDepartment();
+          break;
+        case 'View All Departments':
+          viewAllDepartments();
           break;
         case 'Add Employee':
           addEmployee();
