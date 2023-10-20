@@ -1,6 +1,11 @@
 DROP DATABASE IF EXISTS EmpMan;
 CREATE DATABASE EmpMan;
 USE EmpMan;
+UPDATE employee
+SET role_id = 1  -- Assuming '1' is the new role_id
+WHERE id = [employee_id];  -- Replace [employee_id] with the actual employee's ID you want to update.
+INSERT INTO department (name) VALUES ('employee_role')
+
 
 
 -- Create the department table

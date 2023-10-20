@@ -133,13 +133,55 @@ function quit() {
 
 
 function updateEmployeeRole() {
-  // Implement logic to update an employee's role here
-  // You can prompt the user for input and then perform an UPDATE SQL query
-  // Add your code here
+  // Fetch a list of employees from the database
+  connection.query('SELECT id, first_name, last_name FROM employee', (err, employeeData) => {
+    if (err) {
+      console.error('Error querying database for employee list:', err);
+      return;
+    }
+
+    const employeeChoices = employeeData.map((employee) => ({
+      name: `${employee.first_name} ${employee.last_name}`,
+      value: employee.id,
+    }));
+
+    inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'employee_id',
+          message: 'Select the employee whose role you want to update:',
+          choices: employeeChoices,
+        },
+        {
+          type: 'input',
+          name: 'new_role_id',
+          message: 'Enter the new role ID for the employee:',
+        },
+      ])
+      .then((answers) => {
+        const sql = 'UPDATE employee SET role_id = ? WHERE id = ?';
+        const values = [answers.new_role_id, answers.employee_id];
+
+        // Run the SQL query to update the employee's role
+        connection.query(sql, values, (err, results) => {
+          if (err) {
+            console.error('Error changing employee role', err);
+            return;
+          }
+
+          console.log('Employee role changed!');
+
+          // Call the function to continue with user prompts
+          promptUser();
+        });
+      });
+  });
 }
 
+
 function viewAllRoles() {
-  const sql = 'SELECT * FROM role'; // Replace 'employee' with the actual table name
+  const sql = 'SELECT * FROM role'; 
 
   // Run the SQL query to fetch all employees
   connection.query(sql, (err, results) => {
@@ -258,6 +300,9 @@ function promptUser() {
           break;
         case 'Add Role':
           addRole();
+          break;
+        case 'Update Employee Role':
+          updateEmployeeRole();
           break;
         case 'View All Roles':
           viewAllRoles();
