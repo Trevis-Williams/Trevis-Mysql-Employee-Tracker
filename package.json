@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "cfonts": "^3.2.0",
+    "cli-table": "^0.3.11",
     "inquirer": "^9.2.11",
     "mysql2": "^3.6.2"
   }
