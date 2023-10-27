@@ -9,6 +9,5 @@ This application is designed to streamline and simplify employee management task
 ![Screenshot 2023-10-26 192942](https://github.com/Trevis-Williams/Trevis-SVG-Logo-Maker/assets/135195221/8b618fa8-ff0f-45c0-b5a7-a19f44c3e9eb)
 
 ## Video
-
-
+https://drive.google.com/file/d/1Al8olevDhBFnS8flghK7UIfkGIv5rkHx/view
 
